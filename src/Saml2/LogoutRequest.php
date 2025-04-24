@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of php-saml.
  *
@@ -95,8 +96,10 @@ class LogoutRequest
             }
 
             if (!empty($nameId)) {
-                if (empty($nameIdFormat)
-                    && $spData['NameIDFormat'] != Constants::NAMEID_UNSPECIFIED) {
+                if (
+                    empty($nameIdFormat)
+                    && $spData['NameIDFormat'] != Constants::NAMEID_UNSPECIFIED
+                ) {
                     $nameIdFormat = $spData['NameIDFormat'];
                 }
             } else {
@@ -113,9 +116,9 @@ class LogoutRequest
             }
 
             // NameID Format UNSPECIFIED omitted
-            if (!empty($nameIdFormat) && $nameIdFormat == Constants::NAMEID_UNSPECIFIED) {
-                $nameIdFormat = null;
-            }
+            // if (!empty($nameIdFormat) && $nameIdFormat == Constants::NAMEID_UNSPECIFIED) {
+            //     $nameIdFormat = null;
+            // }
 
             $nameIdObj = Utils::generateNameId(
                 $nameId,
@@ -243,11 +246,10 @@ LOGOUTREQUEST;
                 );
             }
 
-            $seckey = new XMLSecurityKey(XMLSecurityKey::RSA_1_5, array('type'=>'private'));
+            $seckey = new XMLSecurityKey(XMLSecurityKey::RSA_1_5, array('type' => 'private'));
             $seckey->loadKey($key);
 
             $nameId = Utils::decryptElement($encryptedData, $seckey);
-
         } else {
             $entries = Utils::query($dom, '/samlp:LogoutRequest/saml:NameID');
             if ($entries->length == 1) {
