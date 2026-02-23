@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of php-saml.
  *
@@ -56,7 +57,7 @@ class IdPMetadataParser
                 throw new Exception(curl_error($ch), curl_errno($ch));
             }
         } catch (Exception $e) {
-            throw new Exception('Error on parseRemoteXML. '.$e->getMessage());
+            throw new Exception('Error on parseRemoteXML. ' . $e->getMessage());
         }
         return $metadataInfo;
     }
@@ -75,17 +76,14 @@ class IdPMetadataParser
      *
      * @return array metadata info in php-saml settings format
      */
-    public static function parseFileXML($filepath, $entityId = null, $desiredNameIdFormat = null, $desiredSSOBinding = Constants::BINDING_HTTP_REDIRECT, $desiredSLOBinding = Constants::BINDING_HTTP_REDIRECT)
+    public static function parseFileXML($xml, $entityId = null, $desiredNameIdFormat = null, $desiredSSOBinding = Constants::BINDING_HTTP_REDIRECT, $desiredSLOBinding = Constants::BINDING_HTTP_REDIRECT)
     {
         $metadataInfo = array();
 
         try {
-            if (file_exists($filepath)) {
-                $data = file_get_contents($filepath);
-                $metadataInfo = self::parseXML($data, $entityId, $desiredNameIdFormat, $desiredSSOBinding, $desiredSLOBinding);
-            }
+            $metadataInfo = self::parseXML($xml, $entityId, $desiredNameIdFormat, $desiredSSOBinding, $desiredSLOBinding);
         } catch (Exception $e) {
-            throw new Exception('Error on parseFileXML. '.$e->getMessage());
+            throw new Exception('Error on parseFileXML. ' . $e->getMessage());
         }
         return $metadataInfo;
     }
@@ -140,7 +138,7 @@ class IdPMetadataParser
                     $metadataInfo['idp']['entityId'] = $entityId;
                 }
 
-                $ssoNodes = Utils::query($dom, './md:SingleSignOnService[@Binding="'.$desiredSSOBinding.'"]', $idpDescriptor);
+                $ssoNodes = Utils::query($dom, './md:SingleSignOnService[@Binding="' . $desiredSSOBinding . '"]', $idpDescriptor);
                 if ($ssoNodes->length < 1) {
                     $ssoNodes = Utils::query($dom, './md:SingleSignOnService', $idpDescriptor);
                 }
@@ -151,7 +149,7 @@ class IdPMetadataParser
                     );
                 }
 
-                $sloNodes = Utils::query($dom, './md:SingleLogoutService[@Binding="'.$desiredSLOBinding.'"]', $idpDescriptor);
+                $sloNodes = Utils::query($dom, './md:SingleLogoutService[@Binding="' . $desiredSLOBinding . '"]', $idpDescriptor);
                 if ($sloNodes->length < 1) {
                     $sloNodes = Utils::query($dom, './md:SingleLogoutService', $idpDescriptor);
                 }
@@ -187,8 +185,9 @@ class IdPMetadataParser
 
                     $idpCertdata = $metadataInfo['idp']['x509certMulti'];
                     if ((count($idpCertdata) == 1 and
-                         ((isset($idpCertdata['signing']) and count($idpCertdata['signing']) == 1) or (isset($idpCertdata['encryption']) and count($idpCertdata['encryption']) == 1))) or
-                         ((isset($idpCertdata['signing']) && count($idpCertdata['signing']) == 1) && isset($idpCertdata['encryption']) && count($idpCertdata['encryption']) == 1 && strcmp($idpCertdata['signing'][0], $idpCertdata['encryption'][0]) == 0)) {
+                            ((isset($idpCertdata['signing']) and count($idpCertdata['signing']) == 1) or (isset($idpCertdata['encryption']) and count($idpCertdata['encryption']) == 1))) or
+                        ((isset($idpCertdata['signing']) && count($idpCertdata['signing']) == 1) && isset($idpCertdata['encryption']) && count($idpCertdata['encryption']) == 1 && strcmp($idpCertdata['signing'][0], $idpCertdata['encryption'][0]) == 0)
+                    ) {
                         if (isset($metadataInfo['idp']['x509certMulti']['signing'][0])) {
                             $metadataInfo['idp']['x509cert'] = $metadataInfo['idp']['x509certMulti']['signing'][0];
                         } else {
@@ -212,7 +211,7 @@ class IdPMetadataParser
                 }
             }
         } catch (Exception $e) {
-            throw new Exception('Error parsing metadata. '.$e->getMessage());
+            throw new Exception('Error parsing metadata. ' . $e->getMessage());
         }
 
         return $metadataInfo;
